@@ -1,20 +1,19 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-part of 'register_bloc.dart';
+part of 'verify_bloc.dart';
 
-abstract class RegisterEvent extends Equatable {
-  const RegisterEvent();
+abstract class VerifyEvent extends Equatable {
+  const VerifyEvent();
 
   @override
   List<Object> get props => [];
 }
 
-class RegisterUserEvent extends RegisterEvent {
+class VerifyUserEvent extends VerifyEvent {
   
   final String Email;
   final String Password;
   final String FirstName;
   final String LastName;
- const RegisterUserEvent({
+ const VerifyUserEvent({
     required this.FirstName,
     required this.LastName,
     required this.Email,

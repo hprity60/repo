@@ -1,17 +1,13 @@
-import 'package:auth_app/core/pref.dart';
-import 'package:auth_app/pages/login_screen.dart';
-import 'package:auth_app/pages/registration_screen.dart';
-import 'package:auth_app/pages/sign_up_screen.dart';
-import 'package:auth_app/pages/user_profile_screen.dart';
-import 'package:auth_app/pages/verify_screen.dart';
-import 'package:auth_app/repositoriy/auth_repository.dart';
+import 'package:auth_app/bloc/forgot_password/forgot_password_bloc.dart';
+import 'package:auth_app/bloc/reset_password/reset_password_bloc.dart';
+import 'package:auth_app/bloc/verify/verify_bloc.dart';
 import 'package:auth_app/utils/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_storage/get_storage.dart';
 
 import 'bloc/login/login_bloc.dart';
-import 'bloc/register/register_bloc.dart';
+import 'bloc/register/sign_up_bloc.dart';
 import 'core/router_name.dart';
 
 void main() async {
@@ -32,24 +28,32 @@ class MyApp extends StatelessWidget {
     // );
 
     return MultiBlocProvider(
-        providers: [
-          BlocProvider<RegisterBloc>(
-            create: (context) => RegisterBloc(AuthRepositoryIml()),
-            child: SignUpScreen(),
-          ),
-          BlocProvider<LoginBloc>(
-            create: (context) => LoginBloc(AuthRepositoryIml()),
-            child: LoginScreen(),
-          ),
-        ],
-        child: MaterialApp(
+      providers: [
+        BlocProvider(
+          create: (context) => sl.get<SignUpBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl.get<LoginBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl.get<VerifyBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl.get<ForgotPasswordBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl.get<ResetPasswordBloc>(),
+        ),
+      ],
+    
+      child: MaterialApp(
           title: 'Auth Demo',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
           onGenerateRoute: RouteNames.generateRoute,
-          initialRoute: RouteNames.registrationScreen,
+          initialRoute: RouteNames.signUpScreen,
           onUnknownRoute: (RouteSettings settings) {
             return MaterialPageRoute(
               builder: (_) => Scaffold(
@@ -65,7 +69,9 @@ class MyApp extends StatelessWidget {
               child: child!,
             );
           },
-        ));
+        
+      ),
+    );
     //      // home: RegistrationScreen(),
 
     // }

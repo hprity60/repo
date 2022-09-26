@@ -5,25 +5,11 @@ import 'package:auth_app/core/pref.dart';
 import 'package:auth_app/pages/verify_screen.dart';
 import 'package:auth_app/utils/injection_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
-
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  // Future<LoginResponseModel> post(String userName, passWord) async {
-  //   var payloadObj = {
-  //     "userName": userName,
-  //     "password": passWord,
-  //     "grant_type": 'password',
-  //   };
-
-  //   var uri = Uri.parse('https://api.chakri.app/api/v1/auth/token');
-  //   var payload = json.encode(payloadObj);
+class LoginScreen extends StatelessWidget {
+   LoginScreen({super.key});
 
   //   var response = await http.post(
   //     uri,
@@ -117,22 +103,30 @@ class _LoginScreenState extends State<LoginScreen> {
                     hintText: 'Enter Password',
                   ),
                 ),
-                ElevatedButton(
-                  child: const Text('login'),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const VerifyScreen(),
-                        ),
-                      );
-                      loginBloc.add(
-                        LoginUserEvent(
-                          username: emailController.text,
-                          password: passwordController.text,
-                        ),
-                      );
-                    }
+                BlocBuilder<LoginBloc, LoginState>(
+                  builder: (context, state) {
+                    print(state);
+                  if (state is LoginLoading) {
+                    return const CircularProgressIndicator();
+                  }
+                    return ElevatedButton(
+                      child: const Text('login'),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => VerifyScreen(),
+                            ),
+                          );
+                          loginBloc.add(
+                            LoginUserEvent(
+                              username: emailController.text,
+                              password: passwordController.text,
+                            ),
+                          );
+                        }
+                      },
+                    );
                   },
                 ),
                 ElevatedButton(
@@ -140,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => const VerifyScreen(),
+                        builder: (_) => VerifyScreen(),
                       ),
                     );
                   },

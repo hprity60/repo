@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'login_bloc.dart';
 
 abstract class LoginState extends Equatable {
@@ -20,4 +21,9 @@ class LoginLoaded extends LoginState {
   });
 }
 
-class LoginFailed extends LoginState {}
+class LoginFailed extends LoginState {
+  final String errorMsg;
+ const LoginFailed({
+    required this.errorMsg,
+  });
+}

@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'package:auth_app/model/register_model.dart';
 import 'package:http/http.dart' as http;
-import 'package:http/http.dart';
 
 import '../core/pref.dart';
 import '../core/remote_urls.dart';
@@ -19,8 +17,7 @@ abstract class AuthRepository {
 class AuthRepositoryIml extends AuthRepository {
   // register user
   @override
-  Future<bool> register(
-      String email, password, firstName, lastName) async {
+  Future<bool> register(String email, password, firstName, lastName) async {
     final http.Response response = await http.post(
       Uri.parse(RemoteUrls.userRegister),
       headers: <String, String>{
@@ -33,7 +30,10 @@ class AuthRepositoryIml extends AuthRepository {
         'LastName': lastName,
       }),
     );
+    print(email);
     print(password);
+    print(firstName);
+    print(lastName);
     print(response.statusCode);
     print(response.body);
     if (response.statusCode == 200) {
@@ -73,6 +73,7 @@ class AuthRepositoryIml extends AuthRepository {
   }
 
   // verify user
+  @override
   Future<VerifyUserModel> verifyUser(
       String email, password, firstName, lastName) async {
     final http.Response response = await http.post(
@@ -104,12 +105,12 @@ class AuthRepositoryIml extends AuthRepository {
   }
 
   // forgot password
+  @override
   Future forgotPassword(String email) async {
     var headersList = {
       'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
       'Accept': 'Accept: application/json',
-      'Authorization':
-          'Bearer qcQycJgODEJIxIepWHiYn24vRvjZovN5JpTQ6Wqa63-agESbIGHQ3lmJS_dE-df8FgnB0gCB7lNyt5-eTnHCkejhhkf8zkl9QJ2XXeQXLrVCpVOANfs2vs6pzGoM8lBZ8PS5Id94HcuPn_iXJf01LAumVtrgHqn93B5sx1ZizbIKsmSlY5sSra5A51G_i-1NFi1BqbZpZJsp5Mwb58GEcQFchAkO2Aj5uLz8tApFhSTKLljDAnfQYMZHeg17s0GkXYQVHHBAJDs2kx4YF9CJP3nzkO52sFBfkVhF6HnB6rqn2EAWyVxa0Zn-2JTzOQSPd_ZlLkiqnb0HRwLgT3u07Fa5YKrV_AQo4pP5NbT6epAG4UaOq7DtXGi1TUK9hgPYTJvFewYyD-DLJvZymPNrpA',
+      'Authorization': 'Bearer ${Preference.getTokenFlag()}',
       'Content-Type': 'application/x-www-form-urlencoded'
     };
     var url = Uri.parse('https://api.chakri.app/api/v1/auth/forgot-password');
@@ -131,17 +132,21 @@ class AuthRepositoryIml extends AuthRepository {
   }
 
   // reset password
+  @override
   Future resetPassword(String code, email, password) async {
     var headersList = {
       'Accept': '*/*',
       'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
-      'Authorization':
-          'Bearer qcQycJgODEJIxIepWHiYn24vRvjZovN5JpTQ6Wqa63-agESbIGHQ3lmJS_dE-df8FgnB0gCB7lNyt5-eTnHCkejhhkf8zkl9QJ2XXeQXLrVCpVOANfs2vs6pzGoM8lBZ8PS5Id94HcuPn_iXJf01LAumVtrgHqn93B5sx1ZizbIKsmSlY5sSra5A51G_i-1NFi1BqbZpZJsp5Mwb58GEcQFchAkO2Aj5uLz8tApFhSTKLljDAnfQYMZHeg17s0GkXYQVHHBAJDs2kx4YF9CJP3nzkO52sFBfkVhF6HnB6rqn2EAWyVxa0Zn-2JTzOQSPd_ZlLkiqnb0HRwLgT3u07Fa5YKrV_AQo4pP5NbT6epAG4UaOq7DtXGi1TUK9hgPYTJvFewYyD-DLJvZymPNrpA',
+      'Authorization': 'Bearer ${Preference.getTokenFlag()}',
       'Content-Type': 'application/json'
     };
     var url = Uri.parse('https://api.chakri.app/api/v1/auth/reset-password');
 
-    var body = {"Code": code, "Email": email, "Password": password};
+    var body = {
+      "Code": code,
+      "Email": email,
+      "Password": password,
+    };
 
     var req = http.Request('POST', url);
     req.headers.addAll(headersList);

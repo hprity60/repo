@@ -1,5 +1,4 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:auth_app/model/login_response_model.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -18,8 +17,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   void login(LoginUserEvent event, Emitter<LoginState> emit) async {
     emit(LoginLoading());
-    final result = await repository.login(event.username, event.password);
-    emit(LoginLoaded(username: event.username, Password: event.password));
-    emit(LoginFailed());
+    try {
+      await repository.login(event.username, event.password);
+      emit(LoginLoaded(username: event.username, Password: event.password));
+    } catch (e) {
+      emit(LoginFailed(errorMsg: e.toString()));
+    }
   }
 }

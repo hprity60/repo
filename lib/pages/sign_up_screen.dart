@@ -2,7 +2,7 @@ import 'package:auth_app/utils/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/register/register_bloc.dart';
+import '../bloc/register/sign_up_bloc.dart';
 import '../core/router_name.dart';
 import '../utils/utils.dart';
 import 'forgot_password_screen.dart';
@@ -16,90 +16,69 @@ class SignUpScreen extends StatelessWidget {
   final TextEditingController lastnameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    final registerBloc = sl.get<RegisterBloc>();
-    return BlocListener<RegisterBloc, RegisterState>(
+    final signUpBloc = sl.get<SignUpBloc>();
+    return BlocListener<SignUpBloc, SignUpState>(
       listener: (context, state) {
-        if (state is RegisterFailed) {
+        if (state is SignUpFailed) {
           Utils.errorSnackBar(context, state.errorMsg);
-        } else if (state is RegisterLoaded) {
-          Navigator.pushReplacementNamed(
-              context, RouteNames.resetPasswordScreen);
-          //Utils.showSnackBar(context, state.);
+        } else if (state is SignUpLoaded) {
+          Navigator.pushReplacementNamed(context, RouteNames.loginScreen);
+          // Utils.showSnackBar(context, state.);
         }
       },
       child: Scaffold(
         body: Form(
-          key: _formKey,
+          key: signUpBloc.formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Enter First name';
-                  }
-                  return null;
-                },
+                onChanged: (value) => signUpBloc.add(
+                    SignUpEventFirstNameChanged(
+                        firstName: firstnameController.text)),
                 controller: firstnameController,
                 decoration: const InputDecoration(hintText: 'Enter First name'),
               ),
               TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Enter Last name';
-                  }
-                  return null;
-                },
+                onChanged: (value) => signUpBloc.add(SignUpEventLastNameChanged(
+                    lastName: lastnameController.text)),
                 controller: lastnameController,
                 decoration: const InputDecoration(hintText: 'Enter last name'),
               ),
               TextFormField(
                 controller: emailController,
                 decoration: const InputDecoration(hintText: 'Enter Email'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Enter email';
-                  } else if (!Utils.isEmail(value.trim())) {
-                    return "Enter valid email";
-                  }
-                  return null;
-                },
+                onChanged: (value) => signUpBloc
+                    .add(SignUpEventEmailChanged(email: emailController.text)),
               ),
               TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Enter Password';
-                  } else if (value.length < 8) {
-                    return 'Enter atleaset 8 Character password';
-                  }
-
-                  return null;
-                },
+                onChanged: (value) => signUpBloc.add(SignUpEventPasswordChanged(
+                    password: passwordController.text)),
                 controller: passwordController,
                 decoration: const InputDecoration(hintText: 'Enter Password'),
               ),
-              BlocBuilder<RegisterBloc, RegisterState>(
+              BlocBuilder<SignUpBloc, SignUpState>(
                 builder: (context, state) {
                   print(state);
-                  if (state is RegisterLoading) {
+                  if (state is SignUpLoading) {
                     return const CircularProgressIndicator();
+                  } else {
+                    return ElevatedButton(
+                        child: const Text('Register'),
+                        onPressed: () {
+                          signUpBloc.add(
+                            SignUpEventSubmit(
+                              email: emailController.text,
+                              password: passwordController.text,
+                              firstName: firstnameController.text,
+                              lastName: lastnameController.text,
+                            ),
+                          );
+                        });
                   }
-                  return ElevatedButton(
-                    child: const Text('Register'),
-                    onPressed: () {
-                      
-                      registerBloc.add(RegisterUserEvent(
-                          Email: emailController.text,
-                          Password: passwordController.text,
-                          FirstName: firstnameController.text,
-                          LastName: lastnameController.text,
-                        ));
-                    },
-                  );
                 },
               ),
               ElevatedButton(
@@ -108,7 +87,7 @@ class SignUpScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => const LoginScreen(),
+                      builder: (_) => LoginScreen(),
                     ),
                   );
                 },
