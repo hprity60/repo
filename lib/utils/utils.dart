@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
 class Utils {
-  
-
   /// Checks if string is a valid username.
   static bool isUsername(String s) =>
       hasMatch(s, r'^[a-zA-Z0-9][a-zA-Z0-9_.]+[a-zA-Z0-9]$');
 
+  /// Checks if string is Currency.
+  static bool isCurrency(String s) => hasMatch(s,
+      r'^(S?\$|\₩|Rp|\¥|\€|\₹|\₽|fr|R\$|R)?[ ]?[-]?([0-9]{1,3}[,.]([0-9]{3}[,.])*[0-9]{3}|[0-9]+)([,.][0-9]{1,2})?( ?(USD?|AUD|NZD|CAD|CHF|GBP|CNY|EUR|JPY|IDR|MXN|NOK|KRW|TRY|INR|RUB|BRL|ZAR|SGD|MYR))?$');
 
   /// Checks if string is phone number.
   static bool isPhoneNumber(String s) {
@@ -37,32 +38,28 @@ class Utils {
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
-          content: Text(errorMsg, style: const TextStyle(color: Colors.red)),
+          elevation: 50,
+          backgroundColor: Colors.black,
+          content: Text(errorMsg,
+              style: const TextStyle(
+                color: Colors.red,
+              )),
         ),
       );
   }
 
-  static void showSnackBar(BuildContext context, String msg,
-      [Color textColor = Colors.amber]) {
-    final snackBar =
-        SnackBar(content: Text(msg, style: TextStyle(color: textColor)));
+  static void successSnackBar(BuildContext context, String errorMsg) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
-      ..showSnackBar(snackBar);
-  }
-
-  static void showSnackBarWithAction(
-      BuildContext context, String msg, VoidCallback onPress,
-      [Color textColor = Colors.amber]) {
-    final snackBar = SnackBar(
-      content: Text(msg, style: TextStyle(color: textColor)),
-      action: SnackBarAction(
-        label: 'Active',
-        onPressed: onPress,
-      ),
-    );
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(snackBar);
+      ..showSnackBar(
+        SnackBar(
+          elevation: 50,
+          backgroundColor: Colors.blueGrey,
+          content: Text(errorMsg,
+              style: const TextStyle(
+                color: Colors.white,
+              )),
+        ),
+      );
   }
 }
